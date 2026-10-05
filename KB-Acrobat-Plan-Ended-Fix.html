@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Acrobat Sign-In Fix</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canaan: #1c4220;
+    --heritage: #46704c;
+    --linen: #eeecda;
+    --paper: #fbfaf3;
+    --ink: #1f2420;
+    --muted: #5a625b;
+    --rule: #d9d6bf;
+    --code-bg: #1c4220;
+    --code-ink: #eeecda;
+    --warn-bg: #f6efd6;
+    --warn-rule: #b8902f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #141a15; --linen: #1c231d; --ink: #eeecda; --muted: #b5b9a8;
+      --rule: #2f3a30; --code-bg: #0c120d; --warn-bg: #2a2516; --heritage: #8fb795;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #141a15; --linen: #1c231d; --ink: #eeecda; --muted: #b5b9a8;
+    --rule: #2f3a30; --code-bg: #0c120d; --warn-bg: #2a2516; --heritage: #8fb795;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--linen); color: var(--ink);
+    font: 16px/1.6 Roboto, "Segoe UI", Arial, sans-serif;
+  }
+  header { background: var(--canaan); color: #eeecda; padding: 40px 16px 32px; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 16px; }
+  header .wrap { padding: 0; }
+  .eyebrow { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; opacity: .8; margin: 0 0 8px; }
+  h1, h2, h3 { font-family: Lora, Georgia, serif; font-weight: 600; line-height: 1.25; }
+  h1 { font-size: 32px; margin: 0 0 12px; }
+  header p.lede { margin: 0; max-width: 640px; opacity: .92; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 20px; font-size: 14px; opacity: .85; }
+  main { background: var(--paper); max-width: 860px; margin: 0 auto; padding: 32px 24px 48px; }
+  @media (max-width: 600px) { main { padding: 24px 16px 40px; } h1 { font-size: 26px; } }
+  h2 { color: var(--canaan); font-size: 23px; margin: 36px 0 10px; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) h2 { color: var(--heritage); } }
+  :root[data-theme="dark"] h2 { color: var(--heritage); }
+  h3 { font-size: 18px; margin: 0 0 6px; }
+  p { margin: 0 0 14px; }
+  .step { display: grid; grid-template-columns: 40px 1fr; gap: 14px; padding: 18px 0; border-top: 1px solid var(--rule); }
+  .step:first-of-type { border-top: 0; }
+  .num {
+    width: 34px; height: 34px; border-radius: 50%; background: var(--heritage); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-weight: 500;
+  }
+  .step > div { min-width: 0; }
+  .who { display: inline-block; font-size: 12px; letter-spacing: .06em; text-transform: uppercase;
+         color: var(--heritage); border: 1px solid var(--heritage); border-radius: 3px; padding: 1px 6px; margin-bottom: 8px; }
+  .code { position: relative; margin: 10px 0 12px; }
+  pre {
+    margin: 0; background: var(--code-bg); color: var(--code-ink); padding: 14px 16px; padding-right: 76px;
+    border-radius: 6px; overflow-x: auto; font: 13.5px/1.5 Consolas, "Courier New", monospace; white-space: pre;
+  }
+  .copy {
+    position: absolute; top: 8px; right: 8px; background: transparent; color: var(--code-ink);
+    border: 1px solid rgba(238,236,218,.45); border-radius: 4px; font: 12px Roboto, sans-serif; padding: 4px 10px; cursor: pointer;
+  }
+  .copy:hover { background: rgba(238,236,218,.12); }
+  code { font-family: Consolas, "Courier New", monospace; font-size: 14px; background: var(--linen); padding: 1px 5px; border-radius: 3px; }
+  .note { background: var(--warn-bg); border-left: 3px solid var(--warn-rule); padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 14px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; margin: 8px 0 14px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-weight: 500; color: var(--muted); }
+  ol, ul { padding-left: 20px; margin: 0 0 14px; }
+  li { margin-bottom: 6px; }
+  a { color: var(--heritage); }
+  footer { max-width: 860px; margin: 0 auto; padding: 16px; font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <p class="eyebrow">IT Knowledge Base</p>
+    <h1>Acrobat shows "Your plan ended" for a licensed user</h1>
+    <p class="lede">How to clear cached Adobe sign-ins and switch Acrobat to browser-based sign-in on Entra-joined Windows devices, so the user lands on their Mountainside enterprise license.</p>
+    <div class="meta">
+      <span>Applies to: Adobe Acrobat (Enterprise / VIP), Windows 10 and 11</span>
+      <span>Time: about 10 minutes</span>
+      <span>Requires: local admin for step 3</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <h2>Symptoms</h2>
+  <p>A user with an assigned Acrobat license opens Acrobat and sees "Your plan ended," "trial expired," or a prompt to subscribe. Premium tools such as Edit, Export, and Organize are locked. Signing out and back in does not help, or the issue returns after a few days.</p>
+
+  <h2>Cause</h2>
+  <p>Acrobat's built-in sign-in window (CEF) does not pass the device ID that Entra ID Conditional Access expects, so the enterprise sign-in can fail or fall back to a different Adobe account. When the user also has a second Adobe account (for example a personal or cloud-only Adobe ID alongside the Mountainside Federated ID), cached credentials in Windows Credential Manager keep pointing Acrobat at the account without a license. Clearing those credentials and forcing sign-in through the system browser resolves it.</p>
+
+  <h2>Resolution</h2>
+
+  <div class="step">
+    <div class="num">1</div>
+    <div>
+      <span class="who">Signed-in user session</span>
+      <h3>Close every Adobe app</h3>
+      <p>Quit Acrobat and the Creative Cloud desktop app if present, including from the system tray. To be sure nothing is still running, open PowerShell and run:</p>
+      <div class="code"><button class="copy">Copy</button><pre>Get-Process Acrobat,AcroCEF,AcroRd32,AdobeCollabSync,AdobeIPCBroker,"Creative Cloud",CCXProcess,CCLibrary,CoreSync,"Adobe Desktop Service" -ErrorAction SilentlyContinue | Stop-Process -Force</pre></div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">2</div>
+    <div>
+      <span class="who">Signed-in user session, not elevated</span>
+      <h3>Clear cached Adobe credentials</h3>
+      <p>Open a regular Command Prompt <strong>as the affected user</strong> and run the command below. It removes every Credential Manager entry whose name contains "Adobe App".</p>
+      <div class="code"><button class="copy">Copy</button><pre>for /F "tokens=1,* delims= " %G in ('cmdkey /list ^| findstr /c:"Adobe App "') do cmdkey /delete %H</pre></div>
+      <div class="note">Credential Manager is per user. If you run this from an elevated prompt under your own admin account, it clears <em>your</em> credentials, not the user's. Run it in the user's own session.</div>
+      <p>If you prefer PowerShell, this does the same thing:</p>
+      <div class="code"><button class="copy">Copy</button><pre>cmdkey /list | Where-Object { $_ -match '^\s*Target:\s*(.+Adobe App .*)$' } | ForEach-Object { cmdkey "/delete:$($Matches[1].Trim())" }</pre></div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">3</div>
+    <div>
+      <span class="who">Local admin</span>
+      <h3>Set Acrobat to sign in through the system browser</h3>
+      <p>Using Registry Editor (<code>Win + R</code>, type <code>regedit</code>, select OK):</p>
+      <ol>
+        <li>Go to <code>HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Adobe\Adobe Acrobat\DC\FeatureLockDown</code>. If <code>FeatureLockDown</code> does not exist, create it as a new key.</li>
+        <li>Inside FeatureLockDown, create a new DWORD (32-bit) Value named <code>iAcroLoginType</code>.</li>
+        <li>Set its value to <code>5</code>.</li>
+        <li>Close Registry Editor.</li>
+      </ol>
+      <p>Or run this from an elevated Command Prompt or PowerShell. It writes the value to both the 64-bit and 32-bit registry views so it works for either Acrobat build:</p>
+      <div class="code"><button class="copy">Copy</button><pre>reg add "HKLM\SOFTWARE\Policies\Adobe\Adobe Acrobat\DC\FeatureLockDown" /v iAcroLoginType /t REG_DWORD /d 5 /f /reg:64
+reg add "HKLM\SOFTWARE\Policies\Adobe\Adobe Acrobat\DC\FeatureLockDown" /v iAcroLoginType /t REG_DWORD /d 5 /f /reg:32</pre></div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">4</div>
+    <div>
+      <span class="who">Signed-in user session</span>
+      <h3>Relaunch Acrobat and sign in</h3>
+      <p>Open Acrobat. Sign-in should now open in the default web browser instead of a pop-up window. Have the user enter their <code>@mountainside.com</code> address and choose <strong>Company or School Account</strong> if asked, then complete the Microsoft sign-in.</p>
+    </div>
+  </div>
+
+  <h2>Confirm the fix</h2>
+  <p>In Acrobat, select the profile icon in the top right and confirm the signed-in email is the user's Mountainside address. The "Your plan ended" panel should be gone and Edit, Export, and Organize should open without a subscribe prompt. To confirm the registry value from PowerShell:</p>
+  <div class="code"><button class="copy">Copy</button><pre>Get-ItemProperty "HKLM:\SOFTWARE\Policies\Adobe\Adobe Acrobat\DC\FeatureLockDown" -Name iAcroLoginType</pre></div>
+
+  <h2>If it still fails</h2>
+  <p>Adobe documents two fallbacks for the same Conditional Access issue. Try them in order, relaunching Acrobat after each.</p>
+  <table>
+    <tr><th>Fallback</th><th>Change</th></tr>
+    <tr><td>A</td><td>In the same FeatureLockDown key, add DWORD <code>iNGLCEFWorkflowEnabled</code> with value <code>0</code>.</td></tr>
+    <tr><td>B</td><td>Create an empty file named <code>EnableIEBrowserWF.CONFIG</code> in <code>C:\ProgramData\Adobe\OperatingConfigs</code> (create the folder if missing).</td></tr>
+  </table>
+  <p>If the user still lands on the wrong account, check the Adobe Admin Console for duplicate entries under different identity types (Adobe ID and Federated ID) and escalate to Adobe Enterprise Support to reconcile them.</p>
+
+  <h2>Fleet-wide option</h2>
+  <p>For multiple devices, the same fix is available as Intune scripts: a device script (runs as SYSTEM, sets the registry value), a user script (runs with the logged-on user's credentials, clears Credential Manager), and an optional Remediations detection script to keep the value in place after Acrobat updates. Ask the endpoint team for the package.</p>
+
+  <h2>References</h2>
+  <ul>
+    <li><a href="https://helpx.adobe.com/acrobat/kb/cef-based-sign-in-not-working-with-azure-ad-conditional-access.html">Adobe: CEF-based sign-in does not work with Azure AD conditional access</a></li>
+    <li><a href="https://helpx.adobe.com/acrobat/desktop/get-started/access-the-app/install-acrobat-enterprise.html">Adobe: Install Acrobat Enterprise term or VIP license</a></li>
+    <li>Credential cleanup command provided by Adobe Support during case resolution, October 2026.</li>
+  </ul>
+
+</main>
+
+<footer>Internal IT use. Verify against current Adobe documentation before changing this procedure.</footer>
+
+<script>
+  document.querySelectorAll('.copy').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var text = btn.nextElementSibling.innerText;
+      var done = function () { btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = 'Copy'; }, 1500); };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, function () { fallback(text); done(); });
+      } else { fallback(text); done(); }
+    });
+  });
+  function fallback(text) {
+    var t = document.createElement('textarea'); t.value = text; document.body.appendChild(t);
+    t.select(); try { document.execCommand('copy'); } catch (e) {} document.body.removeChild(t);
+  }
+</script>
+</body>
+</html>
